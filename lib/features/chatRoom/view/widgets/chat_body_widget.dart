@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../constants/utils/colors.dart';
+import 'app_image_widget.dart';
 import 'get_user_details_widget.dart';
+import 'image_screen.dart';
+import 'video_app_widget.dart';
 
 class ChatBodyWidget extends StatelessWidget {
   final String chatRoomId;
@@ -35,6 +38,14 @@ class ChatBodyWidget extends StatelessWidget {
           final senderId = chatData?['idFrom'];
           final time = chatData?['timestamp'];
           final messageData = chatData?['content'];
+
+          final imageUrl = chatData?['imageUrl'];
+          final videoUrl = chatData?['videoUrl'];
+
+          bool hasImage =
+              chatData?['imageUrl'] != null && chatData?['imageUrl'].isNotEmpty;
+          bool hasVideo =
+              chatData?['videoUrl'] != null && chatData?['videoUrl'].isNotEmpty;
 
           DateTime dateTime = time.toDate();
 
@@ -94,6 +105,48 @@ class ChatBodyWidget extends StatelessWidget {
                               ? MainAxisAlignment.end
                               : MainAxisAlignment.start,
                           children: [
+                            // if (hasImage)
+                            //   InkWell(
+                            //     onTap: () => Navigator.push(
+                            //         context,
+                            //         MaterialPageRoute(
+                            //             builder: (context) => ImageScreen(
+                            //                   imageUrl: imageUrl,
+                            //                 ))),
+                            //     child: ClipRRect(
+                            //       borderRadius: BorderRadius.circular(8),
+                            //       child: AppImageWidget(
+                            //         imageHeight: 200,
+                            //         imageWidth: double.maxFinite,
+                            //         url: imageUrl,
+                            //         imageFit: BoxFit.cover,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // if (hasVideo)
+                            //   InkWell(
+                            //     onTap: () => Navigator.push(
+                            //         context,
+                            //         MaterialPageRoute(
+                            //             builder: (context) => VideoApp(
+                            //                   url: videoUrl,
+                            //                 ))),
+                            //     child: Container(
+                            //       decoration: BoxDecoration(
+                            //           color: Colors.grey.shade900,
+                            //           borderRadius: BorderRadius.circular(12)),
+                            //       height: 150,
+                            //       width: double.maxFinite,
+                            //       child: const Icon(
+                            //         Icons.play_arrow,
+                            //         color: Colors.white,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // if (hasImage || hasVideo)
+                            //   const SizedBox(
+                            //     height: 10,
+                            //   ),
                             Expanded(
                               child: Text(
                                 messageData,

@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app_flutter/features/profile/bloc/profile_bloc.dart';
 import 'package:chat_app_flutter/features/profile/view/profile_screen.dart';
 import 'package:chat_app_flutter/models/chat_message_model.dart';
+import 'package:chat_app_flutter/services/chat_image_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../constants/textfield_constant.dart';
@@ -31,6 +35,35 @@ class PersonalChatRoomScreen extends StatefulWidget {
 
 class _PersonalChatRoomScreenState extends State<PersonalChatRoomScreen> {
   late TextEditingController messageController;
+  File? media;
+  File? video;
+  bool dpPicked = false;
+  bool videoPicked = false;
+
+  pickDp() async {
+    List? image = await ChatImageService().pickFromGallery();
+    if (image != null && image.length == 4) {
+      setState(() {
+        media = image[0];
+        dpPicked = true;
+        videoPicked = false;
+        video = null;
+      });
+    }
+  }
+
+  pickVideo() async {
+    List? videoFile = await ChatImageService().pickVideoFromGallery();
+    if (videoFile != null && videoFile.length == 4) {
+      setState(() {
+        video = videoFile[0];
+        videoPicked = true;
+        dpPicked = false;
+        media = null;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +94,62 @@ class _PersonalChatRoomScreenState extends State<PersonalChatRoomScreen> {
                     currentUserId: widget.currentUserId ?? "",
                   )),
             ),
+            const SizedBox(height: 8),
+            // if (dpPicked)
+            //   Row(
+            //     children: [
+            //       const SizedBox(width: 8),
+            //       Container(
+            //           height: 80,
+            //           width: 80,
+            //           decoration: BoxDecoration(
+            //               borderRadius: BorderRadius.circular(8),
+            //               image: DecorationImage(
+            //                   fit: BoxFit.cover,
+            //                   image: FileImage(
+            //                     media!,
+            //                   )))),
+            //       const SizedBox(width: 12),
+            //       IconButton(
+            //         icon: const Icon(Icons.cancel),
+            //         onPressed: () {
+            //           setState(() {
+            //             dpPicked = false;
+            //             media = null;
+            //           });
+            //         },
+            //       )
+            //     ],
+            //   ),
+            // if (videoPicked)
+            //   Row(
+            //     children: [
+            //       const SizedBox(width: 8),
+            //       Container(
+            //         height: 80,
+            //         width: 80,
+            //         decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(8),
+            //             color: Colors.grey.shade200),
+            //         child: Center(
+            //           child: Icon(
+            //             Icons.play_arrow,
+            //             color: Colors.grey.shade400,
+            //           ),
+            //         ),
+            //       ),
+            //       const SizedBox(width: 12),
+            //       IconButton(
+            //         icon: const Icon(Icons.cancel),
+            //         onPressed: () {
+            //           setState(() {
+            //             videoPicked = false;
+            //             video = null;
+            //           });
+            //         },
+            //       )
+            //     ],
+            //   ),
             Row(
               children: [
                 Expanded(
@@ -89,25 +178,125 @@ class _PersonalChatRoomScreenState extends State<PersonalChatRoomScreen> {
                             ),
                           ),
                         ),
-                        const Icon(Icons.attach_file)
+                        InkWell(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    content: Wrap(
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      // runAlignment: WrapAlignment.center,
+                                      // direction: Axis.vertical,
+                                      children: [
+                                        const Align(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "Select one",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  pickDp();
+                                                },
+                                                child: const Padding(
+                                                  padding: EdgeInsets.all(15.0),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text("Image",
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      SizedBox(height: 20),
+                                                      Icon(Icons.image),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  pickVideo();
+                                                },
+                                                child: const Padding(
+                                                  padding: EdgeInsets.all(15.0),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text("Video",
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      SizedBox(height: 20),
+                                                      Icon(Icons.movie),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: const Icon(Icons.attach_file))
                       ],
                     ),
                   ),
                 ),
                 InkWell(
                   onTap: () {
-                    context
-                        .read<ChatRoomBloc>()
-                        .add(SendMessageInPersonalChatEvent(
-                          chatMessageModel: ChatMessages(
-                            idFrom: widget.currentUserId ?? '',
-                            idTo: widget.otherProfileId,
-                            timestamp: DateTime.now(),
-                            content: messageController.text,
-                            type: "personal",
-                          ),
-                          chatRoomId: widget.chatRoomId,
-                        ));
+                    if (messageController.text.isNotEmpty ||
+                        dpPicked ||
+                        videoPicked) {
+                      File? mediaPicked = media;
+                      File? videoPickedFile = video;
+                      // setState(() {
+                      dpPicked = false;
+                      videoPicked = false;
+                      video = null;
+                      media = null;
+                      // });
+
+                      context
+                          .read<ChatRoomBloc>()
+                          .add(SendMessageInPersonalChatEvent(
+                            chatMessageModel: ChatMessages(
+                              idFrom: widget.currentUserId ?? '',
+                              idTo: widget.otherProfileId,
+                              timestamp: DateTime.now(),
+                              content: messageController.text,
+                              type: "personal",
+                            ),
+                            chatRoomId: widget.chatRoomId,
+                            image: mediaPicked,
+                            video: videoPickedFile,
+                          ));
+                    }
 
                     messageController.clear();
                   },
@@ -162,9 +351,14 @@ class _PersonalChatRoomScreenState extends State<PersonalChatRoomScreen> {
                   width: 50,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(50.0)),
-                    child: Image.network(
-                      widget.profile,
-                      fit: BoxFit.cover,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.profile,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                     ),
                   ),
                 ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:chat_app_flutter/services/chatRoomServices/chat_room_services.dart';
 import 'package:equatable/equatable.dart';
@@ -15,6 +17,8 @@ class ChatRoomBloc extends Bloc<ChatRoomEvent, ChatRoomState> {
         final sendMessageStatus = await chatRoomServices.sendMessage(
           chatRoomId: event.chatRoomId,
           chatMessageModel: event.chatMessageModel,
+          image: event.image,
+          video: event.video,
         );
 
         print(

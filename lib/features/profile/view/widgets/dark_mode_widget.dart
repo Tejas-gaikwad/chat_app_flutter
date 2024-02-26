@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../constants/utils/colors.dart';
-import '../../../theme_state/bloc/theme_bloc.dart';
 
 class DarkModeWidget extends StatefulWidget {
   const DarkModeWidget({super.key});

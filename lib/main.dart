@@ -16,7 +16,8 @@ Future main() async {
     appId: "1:530584331887:android:728851324420e378328f9a",
     messagingSenderId: "530584331887",
     projectId: "chat-app-flutter-cb1fe",
-    storageBucket: "chat_app_flutter.appspot.com",
+    // storageBucket:
+    //     "chat-app-flutter.appspot.com", //"chat-app-flutter-cb1fe.appspot.com",
   ));
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   NotificationSettings settings = await messaging.requestPermission(

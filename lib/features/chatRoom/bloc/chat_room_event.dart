@@ -8,10 +8,14 @@ sealed class ChatRoomEvent extends Equatable {
 class SendMessageInPersonalChatEvent extends ChatRoomEvent {
   final String chatRoomId;
   final ChatMessages chatMessageModel;
+  final File? image;
+  final File? video;
 
   SendMessageInPersonalChatEvent({
     required this.chatRoomId,
     required this.chatMessageModel,
+    this.image,
+    this.video,
   });
 
   @override

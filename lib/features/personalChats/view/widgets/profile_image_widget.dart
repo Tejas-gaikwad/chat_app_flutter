@@ -24,11 +24,17 @@ class ProfileImageWidget extends StatelessWidget {
             width: 50,
             child: ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(50.0)),
-              child: Image.network(
-                userData?['imagePath'] ??
-                    "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png",
-                fit: BoxFit.cover,
-              ),
+              child: (userData?['imagePath'] != null ||
+                      userData?['imagePath'] != "")
+                  ? Image.network(
+                      userData?['imagePath'] ??
+                          "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png",
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png",
+                      fit: BoxFit.cover,
+                    ),
             ),
           );
         }
