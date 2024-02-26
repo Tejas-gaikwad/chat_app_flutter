@@ -44,53 +44,55 @@ class _CreateGroupWidgetState extends State<CreateGroupWidget> {
           return SafeArea(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Group Name",
-                    style: Theme.of(context).textTheme.bodyText2,
-                  ),
-                  TextField(
-                    controller: groupNameController,
-                    decoration: const InputDecoration(
-                      hintText: "Enter Group Name",
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Group Name",
+                      style: Theme.of(context).textTheme.bodyText2,
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                  Text(
-                    "Add Group Members",
-                    style: Theme.of(context).textTheme.bodyText2,
-                  ),
-                  userMembersAddingListWidget(),
-                  const SizedBox(height: 20),
-                  InkWell(
-                    onTap: () {
-                      addUsersToGroupList.add(widget.currentUserId);
-
-                      context.read<PersonalChatBloc>().add(
-                            CreateGroupEvent(
-                              groupName: groupNameController.text,
-                              groupUsersList: addUsersToGroupList,
-                            ),
-                          );
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
-                      decoration: BoxDecoration(
-                          color: primaryFairColor,
-                          borderRadius: BorderRadius.circular(8.0)),
-                      child: Text(
-                        "Create group",
-                        style: Theme.of(context).textTheme.bodyText2,
+                    TextField(
+                      controller: groupNameController,
+                      decoration: const InputDecoration(
+                        hintText: "Enter Group Name",
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                    const SizedBox(height: 40),
+                    Text(
+                      "Add Group Members",
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                    userMembersAddingListWidget(),
+                    const SizedBox(height: 20),
+                    InkWell(
+                      onTap: () {
+                        addUsersToGroupList.add(widget.currentUserId);
+
+                        context.read<PersonalChatBloc>().add(
+                              CreateGroupEvent(
+                                groupName: groupNameController.text,
+                                groupUsersList: addUsersToGroupList,
+                              ),
+                            );
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                            color: primaryFairColor,
+                            borderRadius: BorderRadius.circular(8.0)),
+                        child: Text(
+                          "Create group",
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           );
