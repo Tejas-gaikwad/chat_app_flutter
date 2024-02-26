@@ -1,8 +1,11 @@
+import 'package:chat_app_flutter/features/theme_state/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/start_screen/start_screen.dart';
+import 'features/theme_state/bloc/theme_bloc.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +33,10 @@ Future main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(const MyApp());
+  runApp(BlocProvider<ThemeBloc>(
+    create: (context) => ThemeBloc(ThemeInitialState()),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -43,13 +49,21 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const StartCheckScreen(),
+    return BlocBuilder<ThemeBloc, ThemeState>(
+      builder: (context, state) {
+        ThemeData theme;
+        if (state is ThemeChanged) {
+          theme = state.isDarkMode ? darkMode : lightMode;
+        } else {
+          // Default to light theme if the state is not available yet
+          theme = lightMode;
+        }
+
+        return const MaterialApp(
+          title: 'Chat App',
+          home: StartCheckScreen(),
+        );
+      },
     );
   }
 }

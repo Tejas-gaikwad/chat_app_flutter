@@ -3,14 +3,14 @@ import 'dart:convert';
 
 class ChatMessages {
   String idFrom;
-  String idTo;
+  String? idTo;
   DateTime timestamp;
   String content;
   String type;
 
   ChatMessages({
     required this.idFrom,
-    required this.idTo,
+    this.idTo,
     required this.timestamp,
     required this.content,
     required this.type,

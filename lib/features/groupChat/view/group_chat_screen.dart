@@ -1,12 +1,15 @@
 import 'package:chat_app_flutter/constants/widgets/chat_inital_profile_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../constants/app_bar_header_widget.dart';
 import '../../../constants/utils/colors.dart';
 import '../../personalChats/bloc/personal_chat_bloc.dart';
+import 'widgets/create_group_widget.dart';
 
 class GroupChatScreen extends StatefulWidget {
   final String userId;
-  const GroupChatScreen({super.key, required this.userId});
+  final Function()? onTap;
+  const GroupChatScreen({super.key, required this.userId, this.onTap});
 
   @override
   State<GroupChatScreen> createState() => _GroupChatScreenState();
@@ -25,6 +28,45 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: InkWell(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) {
+              return BlocProvider<PersonalChatBloc>(
+                create: (context) =>
+                    PersonalChatBloc(PersonalChatsInitialState()),
+                child: CreateGroupWidget(
+                  currentUserId: widget.userId,
+                ),
+              );
+            },
+          ));
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            color: primaryFairColor,
+          ),
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              const SizedBox(width: 10),
+              const Icon(
+                Icons.add,
+                color: whiteColor,
+                size: 20,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                "Create Group",
+                style: Theme.of(context).textTheme.bodyText2,
+              ),
+              const SizedBox(width: 10),
+            ],
+          ),
+        ),
+      ),
       body: SafeArea(
         child: BlocConsumer<PersonalChatBloc, PersonalChatState>(
           builder: (context, state) {
@@ -38,7 +80,11 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
             if (state is PersonalChatsSuccessfulLoadedState) {
               return Column(
                 children: [
-                  headerWidget(),
+                  AppBarHeaderWidget(
+                    headerTitle: "Groups",
+                    userId: widget.userId,
+                    onProfileTap: widget.onTap,
+                  ),
                   searchWidget(),
                   ListView.builder(
                     shrinkWrap: true,
@@ -56,19 +102,15 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
             }
 
             if (state is PersonalChatsErrorState) {
-              return const Center(
+              return Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error, color: primaryColor, size: 50),
+                    const Icon(Icons.error, color: primaryColor, size: 50),
                     Text(
                       "Error",
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyText2,
                     ),
                   ],
                 ),
@@ -83,8 +125,11 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           },
           listener: (context, state) {
             if (state is PersonalChatsErrorState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Error While Fetching chats")));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                "Error While Fetching chats",
+                style: Theme.of(context).textTheme.bodyText2,
+              )));
             }
           },
         ),

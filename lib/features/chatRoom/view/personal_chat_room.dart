@@ -174,17 +174,11 @@ class _PersonalChatRoomScreenState extends State<PersonalChatRoomScreen> {
                     children: [
                       Text(
                         widget.username ?? "Unknown",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
+                        style: Theme.of(context).textTheme.bodyText2,
                       ),
-                      const Text(
+                      Text(
                         "Online",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
-                        ),
+                        style: Theme.of(context).textTheme.bodyText2,
                       ),
                     ],
                   ),

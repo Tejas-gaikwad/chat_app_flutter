@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../constants/utils/colors.dart';
 import '../../auth/bloc/auth_bloc.dart';
+import '../../auth/views/login_screen.dart';
 import '../../auth/views/register_view.dart';
 import '../../bottomNavigationBar/bottom_navigation_bar_widget.dart';
 
@@ -36,8 +37,11 @@ class SplashScreen extends StatelessWidget {
           if (state is GoogleLoginErrorState) {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Error While Google Login"),
+              SnackBar(
+                content: Text(
+                  "Error While Google Login",
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
               ),
             );
           }
@@ -92,26 +96,18 @@ class SplashScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 10),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Text(
                 "Chat with friends & meet new ones",
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: primaryColor,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(context).textTheme.bodyText2,
               ),
             ),
-            const Text(
+            Text(
               "Your bew facourite app to chat with friends & meet new ones",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: primaryColor,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.bodyText2,
             ),
             InkWell(
               onTap: () {
@@ -119,7 +115,10 @@ class SplashScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return const RegisterNow();
+                      return BlocProvider(
+                        create: (context) => AuthBloc(AuthInitialState()),
+                        child: const LoginScreen(),
+                      );
                     },
                   ),
                 );
@@ -136,10 +135,46 @@ class SplashScreen extends StatelessWidget {
                   children: [
                     //TODO add google logo here
 
-                    Text(
-                      "Register Now",
-                      style: TextStyle(color: whiteColor),
-                    ),
+                    Text("Login",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ],
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return BlocProvider(
+                        create: (context) => AuthBloc(AuthInitialState()),
+                        child: const RegisterNow(),
+                      );
+                    },
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6.0),
+                  color: primaryColor,
+                ),
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    //TODO add google logo here
+
+                    Text("Register Now",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        )),
                   ],
                 ),
               ),
@@ -160,10 +195,11 @@ class SplashScreen extends StatelessWidget {
                   children: [
                     //TODO add google logo here
 
-                    Text(
-                      "Sign in with Google",
-                      style: TextStyle(color: whiteColor),
-                    ),
+                    Text("Sign in with Google",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        )),
                   ],
                 ),
               ),

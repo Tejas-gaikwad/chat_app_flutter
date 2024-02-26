@@ -25,14 +25,6 @@ class _StartCheckScreenState extends State<StartCheckScreen> {
     getUserData();
   }
 
-  //   Future<bool> isLoggedIn() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   isLoggedInStatus = prefs.getBool('isLoggedIn') ?? false;
-
-  //   print("isLoggedInStatus   ->>>>>>>>    ${isLoggedInStatus}");
-  //   return isLoggedInStatus;
-  // }
-
   Future<void> _checkLoginStatus() async {
     final userLoginStatus = await SharedPreferencesService.getUserLoginStatus();
     setState(() {
@@ -41,9 +33,6 @@ class _StartCheckScreenState extends State<StartCheckScreen> {
 
     final FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
-
-    print("userLoginStatus  ------------      ${userLoginStatus}");
-    print(" user?.uid  ------------      ${user?.uid}");
 
     if (isLoggedIn == true) {
       if (!mounted) return;
@@ -75,7 +64,8 @@ class _StartCheckScreenState extends State<StartCheckScreen> {
       userData = UserDataModel(
         username: user?.displayName ?? '',
         email: user?.email ?? '',
-        imagePath: user?.photoURL ?? '',
+        imagePath: user?.photoURL ??
+            "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png",
         uid: user?.uid ?? '',
       );
     } catch (e) {

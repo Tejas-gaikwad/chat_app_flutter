@@ -12,6 +12,7 @@ class ProfileOptions extends StatelessWidget {
     return Column(
       children: [
         option(
+          context: context,
           optionName: "Edit Profile",
           iconWidget: const Icon(
             Icons.edit,
@@ -20,6 +21,7 @@ class ProfileOptions extends StatelessWidget {
           ),
         ),
         option(
+          context: context,
           optionName: "Notifications",
           iconWidget: const Icon(
             Icons.notifications,
@@ -32,6 +34,7 @@ class ProfileOptions extends StatelessWidget {
   }
 
   Widget option({
+    required BuildContext context,
     required String optionName,
     required Widget iconWidget,
   }) {
@@ -47,10 +50,7 @@ class ProfileOptions extends StatelessWidget {
               const SizedBox(width: 15),
               Text(
                 optionName,
-                style: const TextStyle(
-                  color: whiteColor,
-                  fontSize: 14,
-                ),
+                style: Theme.of(context).textTheme.bodyText2,
               ),
             ],
           ),

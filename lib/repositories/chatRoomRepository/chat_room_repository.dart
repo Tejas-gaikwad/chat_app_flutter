@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../models/chat_message_model.dart';
+import '../../services/notification/notification_service.dart';
 
 class ChatRoomRepository {
   Future<bool> sendMessage({
@@ -8,12 +9,28 @@ class ChatRoomRepository {
     required ChatMessages chatMessageModel,
   }) async {
     try {
-      FirebaseFirestore.instance
+      final chatRoomIdRef = FirebaseFirestore.instance
           .collection("chatRooms")
           .doc(chatRoomId)
           .collection("chats")
-          .doc()
-          .set(chatMessageModel.toMap());
+          .doc();
+
+      await chatRoomIdRef.set(chatMessageModel.toMap());
+
+      final receiverUserId = chatMessageModel.idTo;
+
+      final res = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(receiverUserId)
+          .get();
+      final data = res.data();
+
+      SendNotification().sendNotification(
+        body: "New Message",
+        title: data?['username'],
+        token: data?['fcmToken'],
+        notificationCategory: "message",
+      );
 
       return true;
     } catch (error) {
@@ -35,17 +52,6 @@ class ChatRoomRepository {
           .snapshots()
           .map((querySnapshot) =>
               querySnapshot.docs.map((doc) => doc.id).toList());
-
-      // final dataList = res.docs;
-
-      // for (var data in dataList) {
-      //   final chatId = data.id;
-      //   print("gettingAllMessagesOfChatRoom  ID  ->>>>>      ${chatId}");
-
-      //   allChatsId.add(chatId);
-      // }
-
-      // return allChatsId;
     } catch (error) {
       rethrow;
     }

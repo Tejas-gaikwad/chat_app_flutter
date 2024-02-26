@@ -8,11 +8,13 @@ import 'chat_body_widget.dart';
 class MessagesListingWidget extends StatefulWidget {
   final String chatRoomId;
   final String currentUserId;
+  final bool isGroup;
 
   const MessagesListingWidget({
     super.key,
     required this.chatRoomId,
     required this.currentUserId,
+    this.isGroup = false,
   });
 
   @override
@@ -33,9 +35,13 @@ class _MessagesListingWidgetState extends State<MessagesListingWidget> {
     return BlocBuilder<ChatRoomBloc, ChatRoomState>(
       builder: (context, state) {
         if (state is GettingChatsLoadingState) {
-          const Center(
-            child: CircularProgressIndicator(
-              color: primaryColor,
+          const SizedBox(
+            height: 50,
+            width: 50,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: primaryColor,
+              ),
             ),
           );
         }
@@ -54,11 +60,17 @@ class _MessagesListingWidgetState extends State<MessagesListingWidget> {
           chatRoomId: widget.chatRoomId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const SizedBox(
+              height: 50,
+              width: 50,
+              child: Center(child: CircularProgressIndicator()));
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Text('No chats available');
+          return Text(
+            'No chats available',
+            style: Theme.of(context).textTheme.bodyText2,
+          );
         } else {
           List<String> chatsIdList = snapshot.data!;
           return ListView.builder(
@@ -66,6 +78,7 @@ class _MessagesListingWidgetState extends State<MessagesListingWidget> {
             itemCount: chatsIdList.length,
             itemBuilder: (context, index) {
               return ChatBodyWidget(
+                isGroup: widget.isGroup,
                 chatRoomId: widget.chatRoomId,
                 chatId: chatsIdList[index],
                 currentUserId: widget.currentUserId,

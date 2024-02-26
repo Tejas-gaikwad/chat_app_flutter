@@ -29,6 +29,46 @@ class GoogleLoginErrorState extends AuthState {
   List<Object> get props => [message];
 }
 
+class LoginLoadingState extends AuthState {}
+
+class LoginSuccessState extends AuthState {
+  final String userId;
+
+  const LoginSuccessState({required this.userId});
+
+  @override
+  List<Object> get props => [userId];
+}
+
+class LoginErrorState extends AuthState {
+  final String message;
+
+  const LoginErrorState({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
+class SignUpLoadingState extends AuthState {}
+
+class SignUpSuccessState extends AuthState {
+  final String userId;
+
+  const SignUpSuccessState({required this.userId});
+
+  @override
+  List<Object> get props => [userId];
+}
+
+class SignUpErrorState extends AuthState {
+  final String message;
+
+  const SignUpErrorState({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
 class LogoutLoadingState extends AuthState {}
 
 class LogoutSuccessState extends AuthState {

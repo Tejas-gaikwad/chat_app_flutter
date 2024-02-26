@@ -24,12 +24,28 @@ class ChatInitialProfileWidget extends StatelessWidget {
     return FutureBuilder(
       future: FirebaseFirestore.instance
           .collection("chatRooms")
+          // .where("type", isEqualTo: type)
           .doc(chatRoomId)
           .get(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          print("ERRROR  ->>>>    ${snapshot.error}");
+          return Center(
+            child: Text(
+              "Error",
+              style: Theme.of(context).textTheme.bodyText2,
+            ),
+          );
+        }
+
         if (snapshot.hasData) {
           final data = snapshot.data;
           String? receiverId;
+
+          // final lastMessageNotReadByUserId =
+          //     data?.data()?['lastMessageNotReadBy'];
+          // final DateTime lastMessageSentAt =
+          //     data?.data()?['lastMessageSentAt']?.toDate();
 
           for (var uid in data?['users']) {
             if (uid != currentUserId && data?['type'] == "personal") {
@@ -39,9 +55,12 @@ class ChatInitialProfileWidget extends StatelessWidget {
 
           if (data?['type'] == type) {
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 type == "personal"
                     ? GetUserInfoCardWidget(
+                        // lastMessageNotReadByUserId: lastMessageNotReadByUserId,
+                        // lastMessageSentAt: lastMessageSentAt,
                         currentUserId: currentUserId,
                         uid: receiverId ?? '',
                         chatRoomId: chatRoomId,
@@ -57,8 +76,8 @@ class ChatInitialProfileWidget extends StatelessWidget {
                                   create: (context) =>
                                       ChatRoomBloc(ChatRoomInitialState()),
                                   child: GroupChatRoomScreen(
+                                    username: data?['groupName'],
                                     currentUserId: currentUserId,
-                                    otherProfileId: receiverId ?? "",
                                     chatRoomId: chatRoomId,
                                   ),
                                 );
@@ -73,61 +92,27 @@ class ChatInitialProfileWidget extends StatelessWidget {
                               Container(
                                 margin:
                                     const EdgeInsets.symmetric(horizontal: 10),
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: primaryColor),
                                   shape: BoxShape.circle,
                                   color: Colors.white,
                                 ),
                                 height: 50,
                                 width: 50,
-                                child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(50.0)),
-                                  child: Image.network(
-                                    "https://i.pinimg.com/736x/c4/a6/ad/c4a6ad3a4bdcd5a8d5425f2afa2f81c6.jpg",
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                                child: const ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    child: Icon(Icons.group)),
                               ),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      chatRoomId,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 14,
-                                      ),
+                                      data?['groupName'],
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
                                     ),
-                                    // Text(
-                                    //   "Devloper last Message",
-                                    //   style: TextStyle(
-                                    //     fontWeight: FontWeight.w500,
-                                    //     fontSize: 12,
-                                    //   ),
-                                    // ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Column(
-                                  children: [
-                                    const Text(
-                                      "9 min ago",
-                                      style: TextStyle(fontSize: 10),
-                                    ), // Last message time
-                                    Container(
-                                        padding: const EdgeInsets.all(6),
-                                        decoration: const BoxDecoration(
-                                          color: chatMsgNotifyColor,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Text(
-                                          "2",
-                                          style: TextStyle(fontSize: 12),
-                                        )), //
                                   ],
                                 ),
                               ),
@@ -135,17 +120,11 @@ class ChatInitialProfileWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                Divider(),
+                const Divider(),
               ],
             );
           }
         }
-
-        // if (snapshot.connectionState == ConnectionState.waiting) {
-        //   return const Center(
-        //     child: CircularProgressIndicator(),
-        //   );
-        // }
 
         return const SizedBox();
       },

@@ -12,3 +12,29 @@ class GetAllUsersChatsEvent extends PersonalChatEvent {
   @override
   List<Object> get props => [];
 }
+
+class StartChatWithUserEvent extends PersonalChatEvent {
+  final String senderId;
+  final String receiverId;
+
+  StartChatWithUserEvent({
+    required this.senderId,
+    required this.receiverId,
+  });
+
+  @override
+  List<Object> get props => [senderId, receiverId];
+}
+
+class CreateGroupEvent extends PersonalChatEvent {
+  final String groupName;
+  final List<String> groupUsersList;
+
+  CreateGroupEvent({
+    required this.groupName,
+    required this.groupUsersList,
+  });
+
+  @override
+  List<Object> get props => [groupName, groupUsersList];
+}

@@ -20,5 +20,37 @@ class PersonalChatBloc extends Bloc<PersonalChatEvent, PersonalChatState> {
         emit(PersonalChatsErrorState());
       }
     });
+
+    on<StartChatWithUserEvent>((event, emit) async {
+      try {
+        emit(StartChatLoadingState());
+
+        final status = await allUsersChatsServices.startChatWithUser(
+          receiverUserId: event.senderId,
+          senderUserId: event.receiverId,
+        );
+
+        emit(StartChatSuccessfulLoadedState(status: status));
+      } catch (err) {
+        print("error ->>>>   $err");
+        emit(StartChatErrorState());
+      }
+    });
+
+    on<CreateGroupEvent>((event, emit) async {
+      try {
+        emit(CreateGroupChatLoadingState());
+
+        final status = await allUsersChatsServices.createGroupChat(
+          groupName: event.groupName,
+          listOfUsersInGroup: event.groupUsersList,
+        );
+
+        emit(CreateGroupChatSuccessfulLoadedState(status: status));
+      } catch (err) {
+        print("error ->>>>   $err");
+        emit(CreateGroupChatErrorState());
+      }
+    });
   }
 }

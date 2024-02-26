@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../constants/utils/colors.dart';
 import '../../../services/shared_prefs.dart';
 import '../../auth/bloc/auth_bloc.dart';
+import '../../theme_state/bloc/theme_bloc.dart';
 import 'widgets/dark_mode_widget.dart';
 import 'widgets/logout_button_widget.dart';
-import 'widgets/profile_options.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userId;
@@ -27,7 +27,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
 
-    print("widget.userId  ->>>>   ${widget.userId}");
     context
         .read<ProfileBloc>()
         .add(GetProfileInformationEvent(userId: widget.userId));
@@ -47,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, state) {
           if (state is GetProfileSuccessfulState) {
             return Container(
-              color: blackColor,
+              // color: blackColor,
               height: size.height,
               width: size.width,
               child: Column(
@@ -70,7 +69,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           alignment: Alignment.bottomCenter,
                           child: profilePictureWidget(
                             context: context,
-                            imageUrl: state.userInformation.imagePath,
+                            imageUrl: state.userInformation.imagePath ??
+                                "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png",
                           ),
                         ),
                       ],
@@ -83,9 +83,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     personName: state.userInformation.username,
                   ),
                   const SizedBox(height: 20),
-                  widget.otherUserProfileCheck
-                      ? const SizedBox()
-                      : const Expanded(child: ProfileOptions()),
+                  // widget.otherUserProfileCheck
+                  //     ? const SizedBox()
+                  //     : const Expanded(child: ProfileOptions()),
                   widget.otherUserProfileCheck
                       ? const SizedBox()
                       : Align(
@@ -95,6 +95,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: const LogOutButton(),
                           ),
                         ),
+                ],
+              ),
+            );
+          }
+          if (state is GetProfileErrorState) {
+            return const Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error, size: 50),
+                  Text("Error"),
                 ],
               ),
             );
@@ -121,20 +133,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // SizedBox(height: MediaQuery.of(context).size.height / 2.6),
           Text(
             personName,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: whiteColor,
-            ),
+            style: Theme.of(context).textTheme.bodyText2,
           ),
           const SizedBox(height: 15),
           Text(
             personEmailId,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: whiteColor,
-            ),
+            style: Theme.of(context).textTheme.bodyText2,
           ),
         ],
       ),
@@ -179,17 +183,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
+          Text(
             "Profile",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: whiteColor,
-            ),
+            style: Theme.of(context).textTheme.bodyText2,
           ),
           widget.otherUserProfileCheck
               ? const SizedBox()
-              : const DarkModeWidget(),
+              : BlocProvider<ThemeBloc>(
+                  create: (context) => ThemeBloc(ThemeInitialState()),
+                  child: const DarkModeWidget()),
         ],
       ),
     );

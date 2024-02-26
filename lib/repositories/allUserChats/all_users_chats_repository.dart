@@ -11,10 +11,12 @@ class AllUsersChatsRepository {
           .get();
 
       final data = ref.data();
-      final chatRoomIds = data?["chatRooms"];
+      final chatRoomIds = data?["chatRoomId"];
 
-      for (var id in chatRoomIds) {
-        allUsersChatRoom.add(id);
+      if (chatRoomIds != null && chatRoomIds != []) {
+        for (var id in chatRoomIds) {
+          allUsersChatRoom.add(id);
+        }
       }
 
       return allUsersChatRoom;
@@ -24,37 +26,115 @@ class AllUsersChatsRepository {
     }
   }
 
-  // List<String> allPersonalChatRoom = [];
-  // Future<List<String>> getAllUsersChats() async {
-  //   final ref = await FirebaseFirestore.instance
-  //       .collection("chatRooms")
-  //       .where("type", isEqualTo: "personal")
-  //       .get();
+  Future<bool> startChatWithUser({
+    required String receiverUserId,
+    required String senderUserId,
+  }) async {
+    try {
+      final chatRoomRef =
+          FirebaseFirestore.instance.collection("chatRooms").doc();
 
-  //   final chatRoomIds = ref.docs;
+      await chatRoomRef.set({
+        "chatRoomId": chatRoomRef.id,
+        "type": "personal",
+        "users": [senderUserId, receiverUserId]
+      });
 
-  //   for (var chatRoom in chatRoomIds) {
-  //     print("personal chatRoom id ===>>>>>>>>>     ${chatRoom.id}");
-  //     allPersonalChatRoom.add(chatRoom.id);
-  //   }
+      final senderUserRef =
+          FirebaseFirestore.instance.collection("users").doc(senderUserId);
+      final receiverUserRef =
+          FirebaseFirestore.instance.collection("users").doc(receiverUserId);
 
-  //   return allPersonalChatRoom;
-  // }
+      final senderData = await senderUserRef.get();
+      final senderInfo = senderData.data();
 
-  // List<String> allGroupChatRoom = [];
-  // Future<List<String>> getAllGroupChats() async {
-  //   final ref = await FirebaseFirestore.instance
-  //       .collection("chatRooms")
-  //       .where("type", isEqualTo: "group")
-  //       .get();
+      final senderChatRoomsList = senderInfo?['chatRoomId'];
 
-  //   final chatRoomIds = ref.docs;
+      List<String> senderChatRoomArray = [];
+      if (senderChatRoomsList != null) {
+        for (var chatRoomId in senderChatRoomsList) {
+          senderChatRoomArray.add(chatRoomId);
+        }
+      }
 
-  //   for (var chatRoom in chatRoomIds) {
-  //     print("group chatRoom id ===>>>>>>>>>     ${chatRoom.id}");
-  //     allGroupChatRoom.add(chatRoom.id);
-  //   }
+      senderChatRoomArray.add(chatRoomRef.id);
 
-  //   return allGroupChatRoom;
-  // }
+      await senderUserRef.update({
+        "chatRoomId": senderChatRoomArray,
+      });
+
+      final receiverData = await receiverUserRef.get();
+
+      final receiverInfo = receiverData.data();
+
+      final recieverChatRoomsList = receiverInfo?['chatRoomId'];
+
+      List<String> recieverchatRoomArray = [];
+      if (recieverChatRoomsList != null) {
+        for (var chatRoomId in recieverChatRoomsList) {
+          recieverchatRoomArray.add(chatRoomId);
+        }
+      }
+
+      recieverchatRoomArray.add(chatRoomRef.id);
+
+      await receiverUserRef.update({
+        "chatRoomId": recieverchatRoomArray,
+      });
+
+      return true;
+    } catch (error) {
+      print("error ->>>>   $error");
+      return false;
+    }
+  }
+
+  Future<bool> createGroupChat({
+    required String groupName,
+    required List<String> listOfUsersInGroup,
+  }) async {
+    try {
+      final chatRoomRef =
+          FirebaseFirestore.instance.collection("chatRooms").doc();
+
+      await chatRoomRef.set({
+        "chatRoomId": chatRoomRef.id,
+        "type": "group",
+        "users": listOfUsersInGroup,
+        "groupName": groupName,
+      });
+
+      List<String> userChatList = [];
+      for (var user in listOfUsersInGroup) {
+        final res = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user)
+            .get();
+        final userData = res.data();
+
+        userChatList.clear();
+
+        final userChatRoomsList = userData?["chatRoomId"];
+
+        if (userChatRoomsList != null || userChatRoomsList != []) {
+          for (var userChatRoomId in userChatRoomsList) {
+            userChatList.add(userChatRoomId);
+          }
+          userChatList.add(chatRoomRef.id);
+        } else {
+          userChatList.add(chatRoomRef.id);
+        }
+
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user)
+            .update({"chatRoomId": userChatList});
+      }
+
+      return true;
+    } catch (error) {
+      print("error ->>>>   $error");
+      return false;
+    }
+  }
 }

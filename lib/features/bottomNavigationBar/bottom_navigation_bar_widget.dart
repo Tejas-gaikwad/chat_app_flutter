@@ -24,10 +24,24 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
     final List<Widget> _widgetOptions = <Widget>[
       BlocProvider(
           create: (context) => PersonalChatBloc(PersonalChatsInitialState()),
-          child: PersonalChatsListingScreen(userId: widget.userId)),
+          child: PersonalChatsListingScreen(
+            userId: widget.userId,
+            onTap: () {
+              setState(() {
+                _selectedIndex = 2;
+              });
+            },
+          )),
       BlocProvider(
         create: (context) => PersonalChatBloc(PersonalChatsInitialState()),
-        child: GroupChatScreen(userId: widget.userId),
+        child: GroupChatScreen(
+          userId: widget.userId,
+          onTap: () {
+            setState(() {
+              _selectedIndex = 2;
+            });
+          },
+        ),
       ),
       BlocProvider(
         create: (context) => ProfileBloc(ProfileInitialState()),

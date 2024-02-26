@@ -16,3 +16,23 @@ class PersonalChatsSuccessfulLoadedState extends PersonalChatState {
 }
 
 class PersonalChatsErrorState extends PersonalChatState {}
+
+class StartChatLoadingState extends PersonalChatState {}
+
+class StartChatSuccessfulLoadedState extends PersonalChatState {
+  final bool status;
+
+  StartChatSuccessfulLoadedState({required this.status});
+}
+
+class StartChatErrorState extends PersonalChatState {}
+
+class CreateGroupChatLoadingState extends PersonalChatState {}
+
+class CreateGroupChatSuccessfulLoadedState extends PersonalChatState {
+  final bool status;
+
+  CreateGroupChatSuccessfulLoadedState({required this.status});
+}
+
+class CreateGroupChatErrorState extends PersonalChatState {}

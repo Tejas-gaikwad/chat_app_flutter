@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../features/chatRoom/bloc/chat_room_bloc.dart';
 import '../../features/chatRoom/view/personal_chat_room.dart';
+import '../utils/colors.dart';
 
 class GetUserInfoCardWidget extends StatelessWidget {
   final String uid;
   final String type;
   final String chatRoomId;
   final String currentUserId;
+  final String? lastMessageNotReadByUserId;
+  final DateTime? lastMessageSentAt;
 
   const GetUserInfoCardWidget({
     super.key,
@@ -16,6 +19,8 @@ class GetUserInfoCardWidget extends StatelessWidget {
     required this.type,
     required this.chatRoomId,
     required this.currentUserId,
+    this.lastMessageNotReadByUserId,
+    this.lastMessageSentAt,
   });
 
   @override
@@ -25,6 +30,7 @@ class GetUserInfoCardWidget extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final data = snapshot.data;
+
           final userData = data?.data();
 
           return InkWell(
@@ -37,7 +43,8 @@ class GetUserInfoCardWidget extends StatelessWidget {
                       create: (context) => ChatRoomBloc(ChatRoomInitialState()),
                       child: PersonalChatRoomScreen(
                         otherProfileId: userData?['uid'],
-                        profile: userData?["imagePath"],
+                        profile: userData?["imagePath"] ??
+                            "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png",
                         username: userData?["username"],
                         chatRoomId: chatRoomId,
                         currentUserId: currentUserId,
@@ -63,7 +70,8 @@ class GetUserInfoCardWidget extends StatelessWidget {
                       borderRadius:
                           const BorderRadius.all(Radius.circular(50.0)),
                       child: Image.network(
-                        userData?["imagePath"],
+                        userData?["imagePath"] ??
+                            "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png",
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -75,42 +83,11 @@ class GetUserInfoCardWidget extends StatelessWidget {
                       children: [
                         Text(
                           userData?["username"],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                          ),
+                          style: Theme.of(context).textTheme.bodyText2,
                         ),
-                        // Text(
-                        //   "Devloper last Message",
-                        //   style: TextStyle(
-                        //     fontWeight: FontWeight.w500,
-                        //     fontSize: 12,
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  //   child: Column(
-                  //     children: [
-                  //       const Text(
-                  //         "9 min ago",
-                  //         style: TextStyle(fontSize: 10),
-                  //       ), // Last message time
-                  //       Container(
-                  //           padding: const EdgeInsets.all(6),
-                  //           decoration: const BoxDecoration(
-                  //             color: chatMsgNotifyColor,
-                  //             shape: BoxShape.circle,
-                  //           ),
-                  //           child: const Text(
-                  //             "2",
-                  //             style: TextStyle(fontSize: 12),
-                  //           )), //
-                  //     ],
-                  //   ),
-                  // ),
                 ],
               ),
             ),

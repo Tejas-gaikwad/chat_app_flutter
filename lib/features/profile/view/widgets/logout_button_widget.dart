@@ -30,10 +30,10 @@ class LogOutButton extends StatelessWidget {
                         width: 20,
                         child: Center(
                           child: CircularProgressIndicator(
-                            color: whiteColor,
+                            color: primaryColor,
                           ),
                         ))
-                    : const Row(
+                    : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
@@ -44,10 +44,7 @@ class LogOutButton extends StatelessWidget {
                           SizedBox(width: 15),
                           Text(
                             "LogOut",
-                            style: TextStyle(
-                              color: whiteColor,
-                              fontSize: 14,
-                            ),
+                            style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ],
                       ),
@@ -58,8 +55,11 @@ class LogOutButton extends StatelessWidget {
       },
       listener: (context, state) {
         if (state is LogoutErrorState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Error while Logging out")));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+            "Error while Logging out",
+            style: Theme.of(context).textTheme.bodyText2,
+          )));
         }
         if (state is LogoutSuccessState) {
           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(

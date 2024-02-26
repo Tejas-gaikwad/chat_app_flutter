@@ -18,11 +18,6 @@ class AuthRepository {
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
 
-      print(
-          "googleAuth?.accessToken   ->>>>>>>>>>   ${googleAuth?.accessToken}");
-
-      print("googleAuth?.idToken   ->>>>>>>>>>   ${googleAuth?.idToken}");
-
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
@@ -31,20 +26,18 @@ class AuthRepository {
       final userData = await auth.signInWithCredential(credential);
 
       String uid = userData.user?.uid ?? '';
-      print("uid   ->>>>>>>>>>   ${uid}");
 
       DocumentReference userDocRef = _firestore.collection('users').doc(uid);
 
       final snapshot = await userDocRef.get();
-
-      print("snapshot   ->>>>>>>>>>   ${snapshot.data()}");
 
       if (snapshot.exists) {
         UserDataModel(
           uid: uid,
           username: userData.user?.displayName ?? '',
           email: userData.user?.email ?? '',
-          imagePath: userData.user?.photoURL ?? '',
+          imagePath: userData.user?.photoURL ??
+              "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png",
         );
       } else {
         final messagingData = await FirebaseMessaging.instance.getToken();
@@ -52,12 +45,67 @@ class AuthRepository {
         final userProfilePicture = userData.user?.photoURL;
         await FirebaseFirestore.instance.collection('users').doc(uid).set({
           'uid': uid,
+          "chatRoomId": [],
           'username': userData.user?.displayName,
           'email': userData.user?.email,
-          'imagePath': userProfilePicture,
+          'imagePath': userProfilePicture ??
+              "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png",
           'fcmToken': data,
         });
       }
+
+      return uid;
+    } catch (error) {
+      print("Google login error  ->   $error");
+      rethrow;
+    }
+  }
+
+  Future<String> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      if (userCredential.user != null) {
+        return userCredential.user!.uid;
+      }
+      return "";
+    } catch (error) {
+      print("Google login error  ->   $error");
+      rethrow;
+    }
+  }
+
+  Future<String> signUp({
+    required UserDataModel user,
+    required String password,
+  }) async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: user.email,
+        password: password,
+      );
+
+      String uid = userCredential.user?.uid ?? '';
+
+      userCredential.user?.photoURL;
+      final messagingData = await FirebaseMessaging.instance.getToken();
+      final fcmToken = messagingData;
+
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'uid': uid,
+        'username': user.username,
+        'email': user.email,
+        'fcmToken': fcmToken,
+        'imagePath': "",
+      });
 
       return uid;
     } catch (error) {

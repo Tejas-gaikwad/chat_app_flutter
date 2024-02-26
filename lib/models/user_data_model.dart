@@ -1,13 +1,15 @@
 class UserDataModel {
-  final String uid;
+  final String? uid;
   final String username;
   final String email;
-  final String imagePath;
+  final String? imagePath;
+  final List<String>? chatRoomId;
 
   UserDataModel({
-    required this.uid,
+    this.uid,
     required this.username,
     required this.email,
-    required this.imagePath,
+    this.imagePath,
+    this.chatRoomId,
   });
 }
